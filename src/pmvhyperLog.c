@@ -3,7 +3,8 @@
 #include <math.h>
 #include "mvhyper.h"
 
-void C_pmvhyper(int *x, int *nL, int *L, int *n, double *p, int *lower, int *logp){
+
+void C_pmvhyper_logVal(int *x, int *nL, int *L, int *n, double *p, int *lower, int *logp, double* logVal){
 /*
 x:     number of elements overlap between all subsets
 nL:    number of subsets
@@ -19,19 +20,11 @@ logp:  return log probability
 	double p0=0.0;
 
 
-	double* logVal = (double *)calloc(*n, sizeof(double));
-	if(logVal == NULL) {
-		fprintf(stderr, "pmv: logVal memory allocation failed\n"); fflush(stderr);
-	}
-
-
 	double Xmean;
 	int minL=min(L,*nL);
-	double* pp = (double *)calloc(minL, sizeof(double));
+	double* pp = (double *)calloc(minL+1, sizeof(double));
 
-	for(i=1; i<= *n ; i++){
-		logVal[i-1]=log((double)i);
-	}
+
 	if(*x == 0){
 		C_dmvhyper_logVal(x, nL, L, n, p, &i0, logVal);
 		if(*lower == 0) *p = 1.0 - *p;
@@ -41,9 +34,6 @@ logp:  return log probability
 	Xmean=0.0 + *n;
 	for(i=0; i< *nL ; i++){
 		Xmean = Xmean * L[i] / *n;
-	}
-	for(i=0; i< minL ; i++){
-		pp[i]=0.0;
 	}
 	*p = 0.0;
 	if((double) *x > Xmean){
@@ -71,8 +61,9 @@ logp:  return log probability
 		}
 		if(*lower == 0) *p = 1.0 - *p;
 	}
+	
 	if(*logp > 0) *p = log(*p);
 
-	free(logVal);
+	free(pp);
 	return;
 }

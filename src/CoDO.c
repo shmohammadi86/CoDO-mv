@@ -1,12 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "mvhyper.h"
 
-void CoDO(int x, int nL, int *L, int n, int m_overlap, int m_union, double *p){
+void CoDO(int x, int nL, int *L, int n_union, int n, int m_overlap, int m_union, double *p){
 /*
 x:         number of elements overlap between all subsets
 nL:        number of subsets
 L:         subset sizes
+n_union:   size of union set
 n:         background size
 m_overlap: Number of edges in intersection
 m_union:   Number of edges in union
@@ -14,30 +16,32 @@ p:         output probability
 */
 	register int i;
 	
-	double logVal[n];
-	int minL = min(L,nL);	
-	for(i = 1; i <= n ; i++){
-		logVal[i-1] = log((double)i);
-	}
+	int minL = min(L,nL);		
+
+
+	int total_pairs = (int) ( n_union*(n_union - 1) / 2.0 ) ;
 	
-	long int total_size = 0;
-	for(i = 0; i < nL; i++) {
-		total_size += L[i];
-	}
-	total_size -= (nL-1)*x;
-	int total_pairs = (int) ( total_size*(total_size - 1) / 2.0 ) ;
+	
 	
 	int densityL[2], n_densityL = 2;;
 	densityL[0] = m_union; // sample size in hygecdf
-	double density_pval;
+	double density_pval=1;
 	int success_size = m_overlap - 1;
 	
 	int lower = 0, logp = 0;
 	double pval = 0.0, p0=0.0;
 	
+	int max_size = (total_pairs < n? n:total_pairs);	
+	double* logVal = (double *)calloc(max_size, sizeof(double));
+	if(logVal == NULL) {
+		fprintf(stderr, "CoDO: logVal memory allocation failed\n"); fflush(stderr);
+	}	
+	for(i=1; i<= max_size ; i++){
+		logVal[i-1]=log((double)i);
+	}
+	
 	for(i = x; i <= minL; i++){
 		C_dmvhyper_logVal(&i, &nL, L, &n, &p0, &logp, logVal);		
-		
 		
 		if(i <= 1) 
 			density_pval = 1;
@@ -45,16 +49,21 @@ p:         output probability
 			densityL[1] = i*(i-1) / 2; // pos size in hygecdf
 			
 			// sample size = L[0] = m_union, pos size = L[1] = C(i, 2), success_size = m_overlap - 1
-			C_pmvhyper(&success_size, &n_densityL, densityL, &total_pairs, &density_pval, &lower, &logp);			
+			C_pmvhyper_logVal(&success_size, &n_densityL, densityL, &total_pairs, &density_pval, &lower, &logp, logVal);							
+			//C_pmvhyper(&success_size, &n_densityL, densityL, &total_pairs, &density_pval, &lower, &logp);							
 		}
 		
 		
 		pval += p0*density_pval;		
 		if(1 < pval) {
 			*p = 1.0;
-			return;
+			free(logVal);
+			return;			
 		}
 	}
 	
 	(*p) = pval;
+	
+	free(logVal);
+	return;
 }

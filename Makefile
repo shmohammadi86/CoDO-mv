@@ -1,7 +1,7 @@
 CXX=g++
 INCLUDE=-I./include
 CXXFLAGS=-g3 -march=native -O4 -std=c++11 -fomit-frame-pointer -funroll-loops -fforce-addr -fexpensive-optimizations -msse2  -Wall -fPIC $(INCLUDE)
-SRC=src/binom.c  src/main.c src/cmp.c  src/dmvhyper.c  src/dmvhyperLog.c  src/pmvhyper.c src/CoDO.c
+SRC=src/binom.c  src/main.c src/cmp.c  src/dmvhyper.c  src/dmvhyperLog.c  src/pmvhyper.c src/CoDO.c src/pmvhyperLog.c
 OBJ=$(SRC:.c=.o)
 PROGRAM=CoDO_test
 MEX_EXT=mexa64

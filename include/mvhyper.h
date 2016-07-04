@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+void C_pmvhyper_logVal(int *x, int *nL, int *L, int *n, double *p, int *lower, int *logp, double* logVal);
 void C_pmvhyper(int *x, int *nL, int *L, int *n, double *p, int *lower, int *logp);
 void C_dmvhyper_logVal(int *x, int *nL, int *L, int *n, double *p, int *logp, double *logVal);
 void C_dmvhyper(int *x, int *nL, int *L, int *n, double *p, int *logp);

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #include <math.h>
 #include <string.h>
 #include "mvhyper.h"
@@ -12,17 +14,31 @@ p:     output probability
 logp:  return log probability
 */
 
+
 	int i, j, k, l;
 	int i0=0;
 	int aSize=max(L,*nL) - *x + 1;
-	double f1[aSize], f0[aSize];
+
+	double *f0 = (double *)calloc(aSize, sizeof(double));
+	if(f0 == NULL) {
+		fprintf(stderr, "dmv: f0 memory allocation failed.\n"); fflush(stdout);
+	}
+	double *f1 = (double *)calloc(aSize, sizeof(double));
+	if(f1 == NULL) {
+		fprintf(stderr, "dmv: f1 memory allocation failed.\n"); fflush(stdout);
+	}
+
 	double temp;
+
 	int minL=min(L,*nL);
+
 	if(*nL == 2){
 		*p=C_dhyper_logVal(*x, L[0],*n - L[0],L[1],*logp,logVal);
+		free(f0);
+		free(f1);		
 		return;
 	}
-	for(i=0; i < aSize; i++) f1[i]=(double) 0;
+	
 	*p=0;
 	//from inner-most to outer-most
 	for(i=1; i <= *nL - 1; i++){
@@ -34,7 +50,7 @@ logp:  return log probability
 			}
 			continue;
 		}
-		memcpy ( f0, f1, aSize * sizeof((double) 0) );
+		memcpy ( f0, f1, aSize * sizeof(double) );
 		if(*nL - i >= 2){
 			for(k = *x;k <= minL;k++){ //calculate f_l(k)
 				f1[k - *x]=0;
@@ -57,9 +73,14 @@ logp:  return log probability
 			*p += temp * f1[j - *x];
 		}
 	}
+	
+	free(f0);
+	free(f1);
+	
 	if(*logp>0) *p=log(*p);
 	return;
 }
+
 double C_dhyper_logVal(int x, int w, int b, int n, int logp, double *logVal){
 //probability of getting x white balls out of n draws from an urn with w white balls and b black balls
 	double result;

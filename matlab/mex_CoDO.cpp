@@ -1,7 +1,7 @@
 #include <math.h>
 #include "mex.h"
 
-void CoDO(int x, int nL, int *L, int n, int m_overlap, int m_union, double *p);
+void CoDO(int x, int nL, int *L, int n_union, int n, int m_overlap, int m_union, double *p);
 
 int min(int x, int y) {
 	return (x < y? x:y);
@@ -17,14 +17,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     int row, col;
 	
 	int NumThreads = 1;
-	if(nrhs < 5) {
-		mexErrMsgTxt("Syntax: mex_CoDO(set_sizes, overlap_size, population_size, overlap_edges, union_edges)\n");					
+	if(nrhs < 6) {
+		mexErrMsgTxt("Syntax: mex_CoDO(set_sizes, overlap_size, union_size, population_size, overlap_edges, union_edges)\n");					
 		
 	}
 	
 	int verbose = 0;
-	if(nrhs == 6)
-		verbose = (int ) mxGetScalar(prhs[5]);
+	if(nrhs == 7)
+		verbose = (int ) mxGetScalar(prhs[6]);
 		
 
 	if(!mxIsDouble(prhs[0]) || mxIsComplex(prhs[0])) {
@@ -51,7 +51,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	}
 	
 	for (i = 0; i < max_sizes; i++) {
-		mexPrintf("\tSet %d size = %d\n", i, L[i]);
+		if(verbose)		
+			mexPrintf("\tSet %d size = %d\n", i, L[i]);
 	}
 
 	
@@ -64,33 +65,47 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 		
 	
 	if( !mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) ) {
-		mexErrMsgTxt("population size should be an integer\n");					
+		mexErrMsgTxt("union size should be an integer\n");					
 	}
-	int pop_size = (int ) mxGetScalar(prhs[2]);
+	int union_size = (int ) mxGetScalar(prhs[2]);
 	if(verbose)
-		mexPrintf("population size = %d\n", pop_size);
-	
+		mexPrintf("union size = %d\n", union_size);
+
+
 
 	if( !mxIsDouble(prhs[3]) || mxIsComplex(prhs[3]) ) {
+		mexErrMsgTxt("population size should be an integer\n");					
+	}
+	int pop_size = (int ) mxGetScalar(prhs[3]);
+	if(verbose)
+		mexPrintf("population size = %d\n", pop_size);
+		
+
+	if( !mxIsDouble(prhs[4]) || mxIsComplex(prhs[4]) ) {
 		mexErrMsgTxt("overlap edges should be an integer\n");					
 	}
-	int overlap_edges = (int ) mxGetScalar(prhs[3]);
+	int overlap_edges = (int ) mxGetScalar(prhs[4]);
 	if(verbose)
 		mexPrintf("overlap edges = %d\n", overlap_edges);
 
 
-	if( !mxIsDouble(prhs[4]) || mxIsComplex(prhs[4]) ) {
+	if( !mxIsDouble(prhs[5]) || mxIsComplex(prhs[5]) ) {
 		mexErrMsgTxt("union edges should be an integer\n");					
 	}
-	int union_edges = (int ) mxGetScalar(prhs[4]);
+	int union_edges = (int ) mxGetScalar(prhs[5]);
 	if(verbose)
 		mexPrintf("union edges = %d\n", union_edges);
 		
-	
+	mexEvalString("drawnow;");	
 	double prob;
-	CoDO(overlap_size, max_sizes, L, pop_size, overlap_edges, union_edges, &prob);
-	
+	if(overlap_edges < 1) {
+		prob = 1;
+	}
+	else
+		CoDO(overlap_size, max_sizes, L, union_size, pop_size, overlap_edges, union_edges, &prob);
+			
 	if(prob > 1) prob = 0; // Overflow!
+	
 	
 	plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
 	*mxGetPr(plhs[0]) = prob;

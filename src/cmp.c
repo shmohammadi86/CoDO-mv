@@ -30,5 +30,6 @@ int min(int *a, int n)
 			result=a[i];
 		}
 	}
+
 	return(result);
 }

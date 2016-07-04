@@ -1,3 +1,4 @@
-*.mex*  
-src/*.o 
+*.o 
 *~
+CoDO_test
+*.mexa64

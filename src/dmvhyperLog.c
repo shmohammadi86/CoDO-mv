@@ -11,6 +11,7 @@ n:     background size
 p:     output probability
 logp:  return log probability
 */
+
 	int i, j, k, l;
 	int i0=0;
 	int aSize=max(L,*nL) - *x + 1;

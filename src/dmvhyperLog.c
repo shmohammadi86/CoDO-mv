@@ -13,7 +13,8 @@ n:     background size
 p:     output probability
 logp:  return log probability
 */
-
+	
+	//printf("\tC_dmvhyper_logVal:: x = %d, nL = %d, L[0] = %d, L[1] = %d, n = %d\n", *x, *nL, L[0], L[1], *n);
 
 	int i, j, k, l;
 	int i0=0;

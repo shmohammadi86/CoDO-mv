@@ -97,16 +97,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 		mexPrintf("union edges = %d\n", union_edges);
 		
 	mexEvalString("drawnow;");	
-	double prob;
+	double pval;
 	if(overlap_edges < 1) {
-		prob = 1;
+		mexPrintf("empty edge set -> pval = 1\n");
+		pval = 1;
 	}
 	else
-		CoDO(overlap_size, max_sizes, L, union_size, pop_size, overlap_edges, union_edges, &prob);
+		CoDO(overlap_size, max_sizes, L, union_size, pop_size, overlap_edges, union_edges, &pval);
 			
-	if(prob > 1) prob = 0; // Overflow!
+	if(pval > 1) pval = 0; // Overflow!
 	
+	if(verbose)
+		mexPrintf("final pval = %e\n", pval);
 	
 	plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
-	*mxGetPr(plhs[0]) = prob;
+	*mxGetPr(plhs[0]) = pval;
 }

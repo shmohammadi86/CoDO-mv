@@ -60,9 +60,9 @@ int main() {
 	
 	
 	const int size = 2;
-	const int nZ = 248, n = 4645, nU = 924;
-	const int mZ = 30572, mU = 283099;
-	int L[size] = {527, 645};
+	const int nZ = 32, n = 4645, nU = 1037;
+	const int mZ = 468, mU = 215184;
+	int L[size] = {817, 252};
 	
 		
 	double pval;

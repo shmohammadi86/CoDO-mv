@@ -1,4 +1,4 @@
-*.o 
+src/*.o
 *~
 CoDO_test
 *.mexa64

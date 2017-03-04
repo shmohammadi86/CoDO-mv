@@ -17,7 +17,7 @@ p:         output probability
 	const double tiny = 1.0E-320;
 	register int i;
 	
-	int minL = min(L,nL);		
+	int minL = minArray(L,nL);		
 
 
 	int total_pairs = (int) ( n_union*(n_union - 1) / 2.0 ) ;

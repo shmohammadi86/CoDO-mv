@@ -18,7 +18,7 @@ logp:  return log probability
 
 	int i, j, k, l;
 	int i0=0;
-	int aSize=max(L,*nL) - *x + 1;
+	int aSize=maxArray(L,*nL) - *x + 1;
 
 	double *f0 = (double *)calloc(aSize, sizeof(double));
 	if(f0 == NULL) {
@@ -31,7 +31,7 @@ logp:  return log probability
 
 	double temp;
 
-	int minL=min(L,*nL);
+	int minL=minArray(L,*nL);
 
 	if(*nL == 2){
 		*p=C_dhyper_logVal(*x, L[0],*n - L[0],L[1],*logp,logVal);

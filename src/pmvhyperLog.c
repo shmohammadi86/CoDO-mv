@@ -21,7 +21,7 @@ logp:  return log probability
 
 
 	double Xmean;
-	int minL=min(L,*nL);
+	int minL=minArray(L,*nL);
 	double* pp = (double *)calloc(minL+1, sizeof(double));
 
 

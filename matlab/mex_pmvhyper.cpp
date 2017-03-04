@@ -2,20 +2,11 @@
 #include "mvhyper.h"
 #include "mex.h"
 
-int min(int x, int y) {
-	return (x < y? x:y);
-}
-
-int max(int x, int y) {
-	return (x > y? x:y);
-}
-
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	
-	register int i, j;
+	int i, j;
     int row, col;
 	
-	int NumThreads = 1;
 	if(nrhs != 3) {
 		mexErrMsgTxt("Syntax: mex_pmvhyper(set_sizes, overlap_size, population_size)\n");					
 		
@@ -28,8 +19,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	int m = (int ) mxGetM(prhs[0]);
 	int n = (int ) mxGetN(prhs[0]);
 
-	int min_sizes = min(m, n);
-	int max_sizes = max(m, n);
+	int min_sizes = (m < n? m:n);
+	int max_sizes =  (m > n? m:n);
 	
 	if(min_sizes != 1 || max_sizes < 2) {
 		mexErrMsgTxt("List of set sizes should be a vector with size at least 2\n");		
@@ -37,7 +28,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	mexPrintf("pmvhyper with %d sets\n", max_sizes);
 
 	double *L_dbl = (double *) mxGetPr(prhs[0]);
-	int *L = new int[max_sizes];
+	int *L = (int *)mxCalloc(max_sizes, sizeof(int));
 	for (i = 0; i < max_sizes; i++) {
 		L[i] = (int)roundl(L_dbl[i]);
 	}
@@ -62,14 +53,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	mexPrintf("population size = %d\n", pop_size);
 	
 
-
-	double pval;
+	double pval=1;
 	int lower = 0;
 	int logp = 0;
 	C_pmvhyper(&x, &max_sizes, L, &pop_size, &pval, &lower, &logp);
 	
+	mexPrintf("PRAY!\n");
 	if(pval > 1) pval = 0; // Overflow!
-	
-	plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
-	*mxGetPr(plhs[0]) = pval;
+	plhs[0] = mxCreateDoubleScalar(pval);	
+	/*plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+	*mxGetPr(plhs[0]) = pval;*/
+	mxFree(L);
 }

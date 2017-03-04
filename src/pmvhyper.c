@@ -26,8 +26,8 @@ logp:  return log probability
 
 
 	double Xmean;
-	int minL=min(L,*nL);
-	double* pp = (double *)calloc(minL, sizeof(double));
+	int minL=minArray(L,*nL);
+	double* pp = (double *)calloc(minL+1, sizeof(double));
 
 	for(i=1; i<= *n ; i++){
 		logVal[i-1]=log((double)i);
@@ -52,7 +52,7 @@ logp:  return log probability
 			C_dmvhyper_logVal(&i, nL, L, n, &p0, &i0, logVal);
 			pp[i]=p0;
 			if(p0 <= tiny) break;
-			if(i > (*x + 1) && (p0/pp[i-1]) <= 0.01) break;  //No improve in precision
+			if(i > (*x + 1) && (p0/pp[i-1]) <= 0.01) break;  //No improve in precision*/
 		}
 		for(j = i; j >= *x + 1; j--){ //iteration from smallest to largest; more accurate
 			*p += pp[j];
@@ -74,5 +74,6 @@ logp:  return log probability
 	if(*logp > 0) *p = log(*p);
 
 	free(logVal);
+	free(pp);
 	return;
 }

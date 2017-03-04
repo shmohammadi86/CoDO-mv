@@ -10,7 +10,7 @@ int min2(int a, int b)
    if(a>b) return(b);
    return(a);
 }
-int max(int *a, int n)
+int maxArray(int *a, int n)
 {
 	int i,result;
 	result=a[0];
@@ -21,7 +21,7 @@ int max(int *a, int n)
 	}
 	return(result);
 }
-int min(int *a, int n)
+int minArray(int *a, int n)
 {
 	int i,result;
 	result=a[0];
